@@ -1,0 +1,45 @@
+name: workshop-sql-president
+
+networks:
+    default:
+        name: workshop-sql-president-network
+        driver: bridge
+
+services:
+    database-server:
+        image: mariadb:12
+        container_name: database-server
+        hostname: database-server
+        restart: unless-stopped
+        networks:
+            - default
+        ports:
+            - 3306:3306
+        environment:
+            - TZ=Asia/Bangkok
+            - MARIADB_ROOT_PASSWORD=root
+            - MARIADB_DATABASE=PRESIDENT
+            - MARIADB_USER=user
+            - MARIADB_PASSWORD=password
+        volumes:
+            - ./database:/var/lib/mysql:Z
+
+    database-client:
+        image: phpmyadmin:5
+        container_name: database-client
+        hostname: database-client
+        restart: unless-stopped
+        networks:
+            - default
+        ports:
+            - 80:80
+        environment:
+            - TZ=Asia/Bangkok
+            - MEMORY_LIMIT=512M
+            - UPLOAD_LIMIT=128M
+            - MAX_EXECUTION_TIME=1000
+            - PMA_ARBITRARY=1
+            - PMA_HOSTS=database-server
+            - PMA_PORTS=3306
+            - PMA_USER=user
+            - PMA_PASSWORD=password
